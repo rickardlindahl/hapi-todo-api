@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
+    "lint": "tsc --noEmit && eslint \"src/**/*.{js,ts}\" --quiet --fix",
     "start": "node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch-node": "nodemon dist/app.js",
@@ -15,7 +16,10 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^14.17.0",
+    "@typescript-eslint/eslint-plugin": "^4.26.1",
+    "@typescript-eslint/parser": "^4.26.1",
     "concurrently": "^6.2.0",
+    "eslint": "^7.28.0",
     "nodemon": "^2.0.7",
     "typescript": "^4.3.2"
   },

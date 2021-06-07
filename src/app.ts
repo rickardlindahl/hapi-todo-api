@@ -1,3 +1,3 @@
-const typescriptIsAwesome: string = "TypeScript is awesome!";
+const typescriptIsAwesome = "TypeScript is awesome!";
 
 console.log(typescriptIsAwesome);
