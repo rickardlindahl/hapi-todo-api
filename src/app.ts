@@ -1,3 +1,16 @@
-import { start } from "./lib/server";
+import "./config";
+import { init } from "./lib/server";
 
-start();
+const runApp = async () => {
+  const server = await init();
+
+  await server.start();
+  console.log(`Server running at: ${server.info.uri}`);
+};
+
+process.on("unhandledRejection", (err) => {
+  console.log(err);
+  process.exit(1);
+});
+
+runApp();
