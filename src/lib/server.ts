@@ -1,4 +1,5 @@
 import Hapi from "@hapi/hapi";
+import { HttpMethod } from "../types/http";
 
 const server = Hapi.server({
   port: 3000,
@@ -6,7 +7,7 @@ const server = Hapi.server({
 });
 
 server.route({
-  method: "GET",
+  method: HttpMethod.Get,
   path: "/",
   handler: () => {
     return "Hello World!";
@@ -15,7 +16,7 @@ server.route({
 
 // Get todos
 server.route({
-  method: "GET",
+  method: HttpMethod.Get,
   path: "/todos",
   handler: (_request, _h) => {
     return "Todos!";
@@ -24,7 +25,7 @@ server.route({
 
 // Add todos to a list,
 server.route({
-  method: "POST",
+  method: HttpMethod.Post,
   path: "/todos",
   handler: (_request, _h) => {
     return "New todo created";
@@ -33,7 +34,7 @@ server.route({
 
 // Remove todos from the list,
 server.route({
-  method: "DELETE",
+  method: HttpMethod.Delete,
   path: "/todos/{todoId}",
   handler: (_request, _h) => {
     return "Todo deleted";
@@ -43,7 +44,7 @@ server.route({
 // Mark todo as done,
 // Unmark todos as done,
 server.route({
-  method: "PATCH",
+  method: HttpMethod.Patch,
   path: "/todos/{todoId}",
   handler: (_request, _h) => {
     return "Todo updated";
@@ -52,7 +53,7 @@ server.route({
 
 // Retrieve all events associated with a list of todos (think CRUD events,)
 server.route({
-  method: "GET",
+  method: HttpMethod.Get,
   path: "/events",
   handler: (_request, _h) => {
     return "All events!";
