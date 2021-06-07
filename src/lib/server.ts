@@ -1,5 +1,9 @@
+import Boom from "@hapi/boom";
 import Hapi from "@hapi/hapi";
+import Joi from "joi";
+import { HapiRequest } from "../types/hapi";
 import { HttpMethod } from "../types/http";
+import { Todo } from "../types/todo";
 
 export const init = async () => {
   console.log("Creating Hapi Server");
@@ -46,8 +50,28 @@ export const init = async () => {
   server.route({
     method: HttpMethod.Post,
     path: "/todos",
-    handler: (_request, _h) => {
-      return "New todo created";
+    handler: async (request: HapiRequest<Exclude<Todo, "completed">>, h) => {
+      const { db } = request.mongo;
+
+      try {
+        const result = await db.collection("todos").insertOne({
+          ...request.payload,
+          completed: false,
+        });
+
+        return h.response(result);
+      } catch (e) {
+        console.log(e);
+        throw Boom.badImplementation("terrible implementation", e);
+      }
+    },
+    options: {
+      validate: {
+        payload: Joi.object({
+          title: Joi.string().min(1).max(255).required(),
+          dueDate: Joi.date(),
+        }),
+      },
     },
   });
 
