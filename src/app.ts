@@ -1,3 +1,3 @@
-const typescriptIsAwesome = "TypeScript is awesome!";
+import { start } from "./lib/server";
 
-console.log(typescriptIsAwesome);
+start();
