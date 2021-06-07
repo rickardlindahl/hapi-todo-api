@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
-    "lint": "tsc --noEmit && eslint \"src/**/*.{js,ts}\" --quiet --fix",
+    "lint": "tsc --noEmit && eslint \"src/**/*.ts\" --quiet --fix",
     "start": "node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch-node": "nodemon dist/app.js",
