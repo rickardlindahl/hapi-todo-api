@@ -43,8 +43,18 @@ export const init = async () => {
   server.route({
     method: HttpMethod.Get,
     path: "/todos",
-    handler: (_request, _h) => {
-      return "Todos!";
+    handler: async (request: HapiRequest<void>, h) => {
+      const { db } = request.mongo;
+
+      try {
+        const result = await db
+          .collection<Todo>(Collection.Todos)
+          .find({})
+          .toArray();
+        return h.response(result);
+      } catch (e) {
+        throw Boom.badImplementation("terrible implementation", e);
+      }
     },
   });
 
