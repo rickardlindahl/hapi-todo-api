@@ -57,7 +57,7 @@ export const init = async () => {
 
       try {
         const count = await db
-          .collection(Collection.TodoLists)
+          .collection<Todo>(Collection.TodoLists)
           .countDocuments({ _id: new ObjectId(request.payload.todoList) });
 
         if (count !== 1) {
@@ -78,7 +78,7 @@ export const init = async () => {
     },
     options: {
       validate: {
-        payload: Joi.object({
+        payload: Joi.object<Todo>({
           title: Joi.string().min(1).max(255).required(),
           todoList: Joi.string()
             .regex(/^[0-9a-fA-F]{24}$/)
@@ -99,7 +99,7 @@ export const init = async () => {
 
       try {
         const result = await db
-          .collection(Collection.Todos)
+          .collection<Todo>(Collection.Todos)
           .findOneAndDelete({ _id: new ObjectId(h.request.params.todoId) });
         return h.response(result.value);
       } catch (e) {
@@ -108,7 +108,7 @@ export const init = async () => {
     },
     options: {
       validate: {
-        params: Joi.object({
+        params: Joi.object<{ todoId: string }>({
           todoId: Joi.string()
             .regex(/^[0-9a-fA-F]{24}$/)
             .required(),
