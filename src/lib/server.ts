@@ -90,11 +90,30 @@ export const init = async () => {
   });
 
   // Remove todos from the list,
+  // TODO: Handle todo does not exist
   server.route({
     method: HttpMethod.Delete,
     path: "/todos/{todoId}",
-    handler: (_request, _h) => {
-      return "Todo deleted";
+    handler: async (request: HapiRequest<void>, h) => {
+      const { db } = request.mongo;
+
+      try {
+        const result = await db
+          .collection(Collection.Todos)
+          .findOneAndDelete({ _id: new ObjectId(h.request.params.todoId) });
+        return h.response(result.value);
+      } catch (e) {
+        throw Boom.badImplementation("terrible implementation", e);
+      }
+    },
+    options: {
+      validate: {
+        params: Joi.object({
+          todoId: Joi.string()
+            .regex(/^[0-9a-fA-F]{24}$/)
+            .required(),
+        }),
+      },
     },
   });
 
