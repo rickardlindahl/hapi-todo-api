@@ -73,7 +73,6 @@ export const init = async () => {
 
         return h.response(result.ops[0]);
       } catch (e) {
-        console.log(e);
         throw Boom.badImplementation("terrible implementation", e);
       }
     },
