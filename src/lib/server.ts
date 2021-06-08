@@ -122,8 +122,33 @@ export const init = async () => {
   server.route({
     method: HttpMethod.Patch,
     path: "/todos/{todoId}",
-    handler: (_request, _h) => {
-      return "Todo updated";
+    handler: async (request: HapiRequest<Pick<Todo, "completed">>, h) => {
+      const { db } = request.mongo;
+
+      try {
+        const result = await db
+          .collection<Todo>(Collection.Todos)
+          .findOneAndUpdate(
+            { _id: new ObjectId(h.request.params.todoId) },
+            { $set: { completed: request.payload.completed } },
+            { returnOriginal: false } // returnOriginal is deprecated but will do for now
+          );
+        return h.response(result.value);
+      } catch (e) {
+        throw Boom.badImplementation("terrible implementation", e);
+      }
+    },
+    options: {
+      validate: {
+        params: Joi.object<{ todoId: string }>({
+          todoId: Joi.string()
+            .regex(/^[0-9a-fA-F]{24}$/)
+            .required(),
+        }),
+        payload: Joi.object<Todo>({
+          completed: Joi.boolean().required(),
+        }),
+      },
     },
   });
 
