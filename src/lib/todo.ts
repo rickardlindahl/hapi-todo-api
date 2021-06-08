@@ -1,4 +1,4 @@
-import { Db } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import { Collection } from "../types/collection";
 import { Todo, TodoDocument } from "../types/todo";
 
@@ -12,4 +12,12 @@ export const addTodo = async (db: Db, title: string): Promise<TodoDocument> => {
   });
 
   return todo.ops[0];
+};
+
+export const deleteTodo = async (db: Db, id: string): Promise<Todo | null> => {
+  const todo = await db
+    .collection<Todo>(Collection.Todos)
+    .findOneAndDelete({ _id: new ObjectId(id) });
+
+  return todo.value;
 };

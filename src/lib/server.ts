@@ -6,7 +6,7 @@ import { Collection } from "../types/collection";
 import { HapiRequest } from "../types/hapi";
 import { HttpMethod } from "../types/http";
 import { Todo } from "../types/todo";
-import { addTodo, getAllTodos } from "./todo";
+import { addTodo, deleteTodo, getAllTodos } from "./todo";
 
 export const init = async () => {
   console.log("Creating Hapi Server");
@@ -88,10 +88,8 @@ export const init = async () => {
       const { db } = request.mongo;
 
       try {
-        const result = await db
-          .collection<Todo>(Collection.Todos)
-          .findOneAndDelete({ _id: new ObjectId(h.request.params.todoId) });
-        return h.response(result.value);
+        const result = await deleteTodo(db, h.request.params.todoId);
+        return h.response(result);
       } catch (e) {
         throw Boom.badImplementation("terrible implementation", e);
       }
