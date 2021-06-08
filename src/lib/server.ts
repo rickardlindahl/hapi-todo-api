@@ -56,16 +56,6 @@ export const init = async () => {
       const { db } = request.mongo;
 
       try {
-        const count = await db
-          .collection<Todo>(Collection.TodoLists)
-          .countDocuments({ _id: new ObjectId(request.payload.todoList) });
-
-        if (count !== 1) {
-          throw Boom.badImplementation(
-            `There is no list id ${request.payload.todoList}`
-          );
-        }
-
         const result = await db.collection<Todo>(Collection.Todos).insertOne({
           ...request.payload,
           completed: false,
@@ -80,10 +70,6 @@ export const init = async () => {
       validate: {
         payload: Joi.object<Todo>({
           title: Joi.string().min(1).max(255).required(),
-          todoList: Joi.string()
-            .regex(/^[0-9a-fA-F]{24}$/)
-            .required(),
-          dueDate: Joi.date(),
         }),
       },
     },
