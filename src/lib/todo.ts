@@ -21,3 +21,17 @@ export const deleteTodo = async (db: Db, id: string): Promise<Todo | null> => {
 
   return todo.value;
 };
+
+export const updateTodo = async (
+  db: Db,
+  id: string,
+  completed: boolean
+): Promise<Todo | null> => {
+  const todo = await db.collection<Todo>(Collection.Todos).findOneAndUpdate(
+    { _id: new ObjectId(id) },
+    { $set: { completed } },
+    { returnOriginal: false } // returnOriginal is deprecated but will do for now
+  );
+
+  return todo.value;
+};
