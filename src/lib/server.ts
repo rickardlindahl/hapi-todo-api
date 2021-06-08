@@ -6,7 +6,7 @@ import { Collection } from "../types/collection";
 import { HapiRequest } from "../types/hapi";
 import { HttpMethod } from "../types/http";
 import { Todo } from "../types/todo";
-import { getAllTodos } from "./todo";
+import { addTodo, getAllTodos } from "./todo";
 
 export const init = async () => {
   console.log("Creating Hapi Server");
@@ -64,12 +64,8 @@ export const init = async () => {
       const { db } = request.mongo;
 
       try {
-        const result = await db.collection<Todo>(Collection.Todos).insertOne({
-          ...request.payload,
-          completed: false,
-        });
-
-        return h.response(result.ops[0]);
+        const result = await addTodo(db, request.payload.title);
+        return h.response(result);
       } catch (e) {
         throw Boom.badImplementation("terrible implementation", e);
       }
