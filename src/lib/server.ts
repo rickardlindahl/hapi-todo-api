@@ -2,6 +2,7 @@ import Boom from "@hapi/boom";
 import Hapi from "@hapi/hapi";
 import Joi from "joi";
 import { ObjectId } from "mongodb";
+import { Collection } from "../types/collection";
 import { HapiRequest } from "../types/hapi";
 import { HttpMethod } from "../types/http";
 import { Todo } from "../types/todo";
@@ -56,7 +57,7 @@ export const init = async () => {
 
       try {
         const count = await db
-          .collection("todoLists")
+          .collection(Collection.TodoLists)
           .countDocuments({ _id: new ObjectId(request.payload.todoList) });
 
         if (count !== 1) {
@@ -65,7 +66,7 @@ export const init = async () => {
           );
         }
 
-        const result = await db.collection<Todo>("todos").insertOne({
+        const result = await db.collection<Todo>(Collection.Todos).insertOne({
           ...request.payload,
           completed: false,
         });
