@@ -4,6 +4,13 @@ import Joi from "joi";
 import { HapiRequest } from "../types/hapi";
 import { HttpMethod } from "../types/http";
 import { Todo } from "../types/todo";
+import {
+  getAllEvents,
+  insertTodoAddedEvent,
+  insertTodoDeletedEvent,
+  insertTodoMarkedAsCompletedEvent,
+  insertTodoMarkedAsInCompleteEvent,
+} from "./event";
 import { addTodo, deleteTodo, getAllTodos, updateTodo } from "./todo";
 
 export const init = async () => {
@@ -62,8 +69,11 @@ export const init = async () => {
       const { db } = request.mongo;
 
       try {
-        const result = await addTodo(db, request.payload.title);
-        return h.response(result);
+        const [todo] = await Promise.all([
+          addTodo(db, request.payload.title),
+          insertTodoAddedEvent(db),
+        ]);
+        return h.response(todo);
       } catch (e) {
         throw Boom.badImplementation("terrible implementation", e);
       }
@@ -86,7 +96,10 @@ export const init = async () => {
       const { db } = request.mongo;
 
       try {
-        const result = await deleteTodo(db, h.request.params.todoId);
+        const result = await Promise.all([
+          deleteTodo(db, h.request.params.todoId),
+          insertTodoDeletedEvent(db),
+        ]);
         return h.response(result);
       } catch (e) {
         throw Boom.badImplementation("terrible implementation", e);
@@ -112,11 +125,12 @@ export const init = async () => {
       const { db } = request.mongo;
 
       try {
-        const result = await updateTodo(
-          db,
-          h.request.params.todoId,
+        const result = await Promise.all([
+          updateTodo(db, h.request.params.todoId, request.payload.completed),
           request.payload.completed
-        );
+            ? insertTodoMarkedAsCompletedEvent(db)
+            : insertTodoMarkedAsInCompleteEvent(db),
+        ]);
         return h.response(result);
       } catch (e) {
         throw Boom.badImplementation("terrible implementation", e);
@@ -140,8 +154,15 @@ export const init = async () => {
   server.route({
     method: HttpMethod.Get,
     path: "/events",
-    handler: (_request, _h) => {
-      return "All events!";
+    handler: async (request: HapiRequest<void>, h) => {
+      const { db } = request.mongo;
+
+      try {
+        const result = await getAllEvents(db);
+        return h.response(result);
+      } catch (e) {
+        throw Boom.badImplementation("terrible implementation", e);
+      }
     },
   });
 
